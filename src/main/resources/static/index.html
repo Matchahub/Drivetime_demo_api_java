@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drive Time Demo</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: #f5f6fb;
+        color: #1d1d1f;
+      }
+
+      .container {
+        max-width: 720px;
+        margin: 48px auto;
+        padding: 32px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+      }
+
+      p {
+        margin: 0 0 24px;
+        color: #4b5563;
+      }
+
+      form {
+        display: grid;
+        gap: 16px;
+      }
+
+      label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        font-size: 15px;
+      }
+
+      button {
+        padding: 12px 16px;
+        border: none;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .result {
+        margin-top: 24px;
+        padding: 16px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .result pre {
+        margin: 0;
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+
+      .error {
+        color: #b91c1c;
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Drive Time API Demo</h1>
+      <p>Enter UK origin and destination to fetch drive duration & distance.</p>
+
+      <form id="drive-form">
+        <div>
+          <label for="origin">Origin</label>
+          <input id="origin" name="origin" placeholder="Starting location" required />
+        </div>
+        <div>
+          <label for="destination">Destination</label>
+          <input id="destination" name="destination" placeholder="Destination" required />
+        </div>
+        <button id="submit-btn" type="submit">Get Drive Time</button>
+      </form>
+
+      <div id="result" class="result" hidden>
+        <pre id="result-json"></pre>
+      </div>
+      <div id="error" class="error" hidden></div>
+    </div>
+
+    <script>
+      const form = document.getElementById("drive-form");
+      const originInput = document.getElementById("origin");
+      const destinationInput = document.getElementById("destination");
+      const resultBox = document.getElementById("result");
+      const resultJson = document.getElementById("result-json");
+      const errorBox = document.getElementById("error");
+      const submitBtn = document.getElementById("submit-btn");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        errorBox.hidden = true;
+        resultBox.hidden = true;
+        submitBtn.disabled = true;
+
+        const origin = originInput.value.trim();
+        const destination = destinationInput.value.trim();
+
+        try {
+          const response = await fetch(
+            `/drivetime?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`
+          );
+
+          if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
+          }
+
+          const data = await response.json();
+          resultJson.textContent = JSON.stringify(data, null, 2);
+          resultBox.hidden = false;
+        } catch (error) {
+          errorBox.textContent = error.message;
+          errorBox.hidden = false;
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
