@@ -30,3 +30,12 @@ out/
 ### Windows
 Thumbs.db
 Desktop.ini
+
+# Terraform local vars
+terraform/terraform.tfvars
+
+# Terraform local state and providers
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.*
